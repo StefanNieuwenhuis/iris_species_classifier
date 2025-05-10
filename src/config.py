@@ -15,4 +15,4 @@ SEED = int(os.getenv("SEED", 42))
 
 # Derived paths
 DATA_DIR = BASE_DIR / "data"
-PROCESSED_DATA_DIR = DATA_DIR / "processed"
+PROCESSED_DATA__DIR = DATA_DIR / "processed"
