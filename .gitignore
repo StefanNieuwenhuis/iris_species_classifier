@@ -5,12 +5,10 @@
 .env
 .venv
 .pytest_cache
+__pycache__
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
-
-# PyTest
-tests/__pycache__
 
 # IDEs
 .vscode/
