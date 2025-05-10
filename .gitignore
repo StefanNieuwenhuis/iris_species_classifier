@@ -2,11 +2,15 @@
 .DS_store
 
 # Python
+.env
 .venv
 .pytest_cache
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
+
+# PyTest
+tests/__pycache__
 
 # IDEs
 .vscode/
