@@ -1,0 +1,10 @@
+# Python
+.venv
+.pytest_cache
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
