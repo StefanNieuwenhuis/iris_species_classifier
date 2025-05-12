@@ -1,5 +1,9 @@
 .PHONY: lint test run format jupyter env
 
+# Download and extract data
+download:
+	$(shell scripts/download_data.sh)
+
 # Install dependencies in a virtual environment (assuming you are using `venv`)
 env:
 	python3 -m venv venv  # Create virtual environment
