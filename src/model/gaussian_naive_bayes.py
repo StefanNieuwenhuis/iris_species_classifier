@@ -10,8 +10,8 @@ class _BaseNB():
     """Abstract base class for naive Bayes estimators"""
 
     @abstractmethod
-    def _joint_log_likelihood(self, X: pd.DataFrame) -> Self:
-        """Compute the unnormalized posterior log probability of X"""
+    def _compute_log_likelihood(self, X: pd.DataFrame) -> Self:
+        """Compute the unnormalized log likelihood of X"""
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame)-> Self:
         """Fit according to X, y."""
@@ -57,7 +57,7 @@ class GaussianNB(_BaseNB):
     def __init__(self, *, priors=None):
         self.priors = priors
 
-    def _compute_priors(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
+    def _compute_priors(self, y: pd.DataFrame) -> Self:
         """
         Compute prior probabilities
 
@@ -114,6 +114,43 @@ class GaussianNB(_BaseNB):
 
         return self
 
+    def _compute_log_likelihood(self, X: pd.DataFrame) -> Self:
+        """
+        Compute log-likelihood for all features in classes
+
+        Parameters
+        ----------
+        X : pandas dataframe of shape (n_samples, n_features)
+            Training vectors, where `n_samples` is the number of samples
+            and `n_features` is the number of features.
+
+        Returns
+        -------
+        self : object
+            Returns the instance itself.
+        """
+
+        log_likelihood = []
+
+        for i in range(len(self.classes_)):
+            mean = self.class_mean_[i, :] # shape (n_features,)
+            var = self.class_var_[i, :] # shape (f_features,)
+
+            # Log of the normalization term: sum of log(2πσ²)
+            norm_term = -0.5 * np.sum(np.log(2.0 * np.pi * var))
+
+            # Squared error term for all samples: shape (n_samples,)
+            squared_error = -0.5 * np.sum(((X - mean) ** 2) / var, axis=1)
+
+            # Total log-likelihood for class i, shape: (n_samples,)
+            total_log_likelihood = norm_term + squared_error
+
+            # Append individual class-specific log likelihood to the log_likelihood matrix
+            log_likelihood.append(total_log_likelihood)
+
+            self.class_log_likelihood_ = np.vstack(log_likelihood).T # shape: (n_samples, n_classes)
+
+        return self
 
 
     def _partial_fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
@@ -140,11 +177,13 @@ class GaussianNB(_BaseNB):
         self.class_count_ = None
 
         # Compute prior probabilities for each class
-        self._compute_priors(X, y)
+        self._compute_priors(y)
 
         # Compute Gaussian parameters (µ and σ²)
         self._compute_gaussian_params(X, y)
 
+        # Compute log likelihood
+        self._compute_log_likelihood(X)
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame)-> Self:
         """
