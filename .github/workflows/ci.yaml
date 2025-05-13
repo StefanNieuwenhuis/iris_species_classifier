@@ -47,23 +47,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y make
 
-      - name: Create virtualenv and install deps
-        run: |
-          python -m venv .venv
-          . .venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
+     - name: Create virtualenv and install dependencies
+        run: make env
 
       - name: Lint
         run: .venv/bin/make lint
@@ -84,11 +72,8 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y make
 
-      - name: Create virtualenv and install deps
-        run: |
-          python -m venv .venv
-          . .venv/bin/activate
-          pip install -r requirements.txt
+      - name: Create virtualenv and install dependencies
+        run: make env
 
       - name: Format check
         run: .venv/bin/make format-check
@@ -109,11 +94,8 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y make
 
-      - name: Create virtualenv and install deps
-        run: |
-          python -m venv .venv
-          . .venv/bin/activate
-          pip install -r requirements.txt
+      - name: Create virtualenv and install dependencies
+        run: make env
 
       - name: Run tests with coverage
         run: .venv/bin/make test-coverage
