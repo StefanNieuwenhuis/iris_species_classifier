@@ -1,4 +1,4 @@
-.PHONY: download lint test run format format-check test-coverage jupyter env
+.PHONY: download lint test run format format-check typecheck test-coverage jupyter env
 
 download:
 	$(shell scripts/download_data.sh)
@@ -18,6 +18,9 @@ format:
 
 format-check:
 	.venv/bin/black --check .
+
+typecheck:
+	.venv/bin/mypy src tests
 
 test:
 	.venv/bin/pytest

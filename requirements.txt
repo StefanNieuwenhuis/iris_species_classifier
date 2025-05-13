@@ -124,3 +124,5 @@ python-dotenv==1.1.0
 ruff==0.11.9
 jupyterlab_templates==0.5.2
 pytest-cov==6.1.1
+mypy==1.15.0
+mypy_extensions==1.1.0

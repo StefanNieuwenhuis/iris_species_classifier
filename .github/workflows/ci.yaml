@@ -40,6 +40,8 @@ jobs:
         run: make lint
       - name: Check code formatting
         run: make format-check
+      - name: Static type checking with mypy
+        run: make typecheck
       - name: Run unit tests and generate code-coverage report
         run: make test-coverage
       - name: Upload code-coverage report to Codecov
