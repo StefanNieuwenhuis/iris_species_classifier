@@ -17,15 +17,74 @@ class _BaseNB():
         """Fit according to X, y."""
         pass
 
-    def predict(self, X: pd.DataFrame) -> Self:
-        """Perform classification on an array of test vectors X."""
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        """
+        Perform classification on an array of test vectors X.
 
-    def predict_proba(self, X: pd.DataFrame) -> Self:
-        """Return probability estimates for the test vector X."""
-        pass
+        Parameters
+        ----------
+        X : pandas dataframe of shape (n_samples, n_features)
+            The input samples.
 
-    def predict_log_proba(self, X: pd.DataFrame) -> Self:
-        """Return log-probability esitmates for the test vector X. """
+        Returns
+        -------
+        C : ndarray of shape (n_samples,)
+            Predicted target values for X.
+        """
+
+        joint_log_likelihood = self._joint_log_likelihood(X)
+
+        return self.classes_[np.argmax(joint_log_likelihood, axis=1)]
+
+    def predict_log_proba(self, X: pd.DataFrame) -> np.ndarray:
+        """
+        Return log-probability estimates for the test vector X.
+
+        Parameters
+        ----------
+        X : pandas dataframe of shape (n_samples, n_features)
+            The input samples
+
+
+        Returns
+        -------
+        C : array-like of shape (n_samples, n_classes)
+            Returns the log-probability of the samples for each class in
+            the model. The columns correspond to the classes in sorted
+            order, as they appear in the attribute :term:`classes_`.
+        """
+
+
+        joint_log_likelihood = self._joint_log_likelihood(X)
+
+        # Compute the log of the marginal likelihood P(X) = P(f_1, ..., f_n)
+        # P(X) is used to normalize the joint log likelihood => P(c|X) = P(c|X)*P(c) / P(X)
+        # log(e^{class_0_sample_0} + ... + e^{class_n_sample_i})
+        marginal_likelihood_x = np.logsumexp(joint_log_likelihood, axis=1)
+
+        return joint_log_likelihood - np.atleast_2d(marginal_likelihood_x).T # shape (n_samples, n_classes)
+
+
+
+    def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
+        """
+        Return probability estimates for the test vector X.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The input samples.
+
+        Returns
+        -------
+        C : array-like of shape (n_samples, n_classes)
+            Returns the probability of the samples for each class in
+            the model.
+        """
+
+        return np.exp(self.predict_log_proba(X))
+
+
 
 
 class GaussianNB(_BaseNB):
@@ -114,7 +173,7 @@ class GaussianNB(_BaseNB):
 
         return self
 
-    def _joint_log_likelihood(self, X: pd.DataFrame) -> Self:
+    def _joint_log_likelihood(self, X: pd.DataFrame) -> np.ndarray:
         """
         Compute the unnormalized posterior log probability of X.
 
@@ -149,9 +208,7 @@ class GaussianNB(_BaseNB):
             # Append individual class-specific log likelihood to the log_likelihood matrix
             log_likelihood.append(class_prior + total_log_likelihood)
 
-            self.class_log_likelihood_ = np.vstack(log_likelihood).T # shape: (n_samples, n_classes)
-
-        return self
+        return np.vstack(log_likelihood).T # shape: (n_samples, n_classes)
 
 
     def _partial_fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
@@ -182,9 +239,6 @@ class GaussianNB(_BaseNB):
 
         # Compute Gaussian parameters (µ and σ²)
         self._compute_gaussian_params(X, y)
-
-        # Compute log likelihood
-        self._compute_log_likelihood(X)
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame)-> Self:
         """
