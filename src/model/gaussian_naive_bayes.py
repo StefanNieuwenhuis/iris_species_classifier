@@ -4,25 +4,28 @@ import numpy as np
 from abc import abstractmethod
 from typing import Self
 
+from collections import defaultdict
+
 class _BaseNB():
     """Abstract base class for naive Bayes estimators"""
 
     @abstractmethod
-    def _joint_log_likelihood(self, X: pd.DataFrame):
+    def _joint_log_likelihood(self, X: pd.DataFrame) -> Self:
         """Compute the unnormalized posterior log probability of X"""
-
-    def predict(self, X: pd.DataFrame):
-        """Perform classification on an array of test vectors X."""
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame)-> Self:
         """Fit according to X, y."""
         pass
 
-    def predict(self ):
+    def predict(self, X: pd.DataFrame) -> Self:
+        """Perform classification on an array of test vectors X."""
+
+    def predict_proba(self, X: pd.DataFrame) -> Self:
+        """Return probability estimates for the test vector X."""
         pass
 
-    def predict_proba(self):
-        pass
+    def predict_log_proba(self, X: pd.DataFrame) -> Self:
+        """Return log-probability esitmates for the test vector X. """
 
 
 class GaussianNB(_BaseNB):
@@ -31,19 +34,19 @@ class GaussianNB(_BaseNB):
 
     Parameters
     ----------
-    priors : array-like of shape (`n_classes`), default=None
+    priors : array-like of shape (n_classes), default=None
         Prior probabilities of the classes. If specified, the priors are not
         adjusted according to the data.
 
     Attributes
         ----------
-        class_count_ : ndarray of shape (n_classes,)
+        class_count_ : ndarray of shape (n_classes)
         number of training samples observed in each class.
 
-        class_prior_ : ndarray of shape (n_classes,)
+        class_prior_ : ndarray of shape (n_classes)
             probability of each class.
 
-        classes_ : ndarray of shape (n_classes,)
+        classes_ : ndarray of shape (n_classes)
             class labels known to the classifier.
     """
 
@@ -77,6 +80,42 @@ class GaussianNB(_BaseNB):
 
         return self
 
+    def _compute_gaussian_params(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
+        """Compute Gaussian Parameters (µ and σ²) for each class
+
+        Parameters
+        ----------
+        X : pandas dataframe of shape (n_samples, n_features)
+            Training vectors, where `n_samples` is the number of samples
+            and `n_features` is the number of features.
+
+        y : pandas dataframe of shape (n_samples)
+            Target values.
+
+         Returns
+        -------
+        self : object
+            Returns the instance itself.
+        """
+        unique_y = np.unique(y)
+        n_classes = len(self.classes_)
+        n_features = X.shape[1]
+
+         # Create array placeholders to store class mean and variance (µ and σ²)
+        self.class_mean_ = np.zeros((n_classes, n_features))
+        self.class_var_ = np.zeros((n_classes, n_features))
+
+        for y_i in unique_y:
+            i = self.classes_.searchsorted(y_i) # get class index
+            X_i = X[y == y_i, :] # Contains all feature variables for class y_i
+
+            self.class_mean_[i, :] = np.mean(X_i, axis=0)
+            self.class_var_[i, :] = np.var(X_i, axis=0)
+
+        return self
+
+
+
     def _partial_fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
         """
         Actual implementation of Gaussian NB fitting.
@@ -95,11 +134,16 @@ class GaussianNB(_BaseNB):
         self : object
             Returns the instance itself.
         """
+
         self.classes_ = None
         self.class_prior_ = None
         self.class_count_ = None
 
+        # Compute prior probabilities for each class
         self._compute_priors(X, y)
+
+        # Compute Gaussian parameters (µ and σ²)
+        self._compute_gaussian_params(X, y)
 
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame)-> Self:
