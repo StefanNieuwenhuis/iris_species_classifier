@@ -5,6 +5,35 @@ on:
     branches: [ main ]
 
 jobs:
+  setup:
+    name: Setup Python and Install Dependencies
+    runs-on: ubuntu-latest
+
+    outputs:
+      python-version: ${{ steps.set-python.outputs.python-version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y make
+
+      - name: Create virtualenv and install dependencies
+        run: make env
+
   lint:
     name: Lint with Ruff
     runs-on: ubuntu-latest
@@ -63,7 +92,7 @@ jobs:
         run: .venv/bin/make format-check
 
   test:
-    name: Run tests + upload coverage report
+    name: Run tests + upload coverage
     runs-on: ubuntu-latest
 
     steps:
