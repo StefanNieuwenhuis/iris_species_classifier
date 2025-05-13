@@ -4,8 +4,6 @@ import numpy as np
 from abc import abstractmethod
 from typing import Self
 
-from collections import defaultdict
-
 class _BaseNB():
     """Abstract base class for naive Bayes estimators"""
 
