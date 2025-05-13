@@ -1,8 +1,11 @@
 # Iris Species Classifier
 
-[![CI](https://github.com/StefanNieuwenhuis/iris_species_classifier/actions/workflows/ci.yaml/badge.svg)](https://github.com/StefanNieuwenhuis/iris_species_classifier/actions/workflows/ci.yaml)
-[![codecov](https://codecov.io/gh/StefanNieuwenhuis/iris_species_classifier/graph/badge.svg?token=94T80D5HC0)](https://codecov.io/gh/StefanNieuwenhuis/iris_species_classifier)
-
+<a href="https://github.com/StefanNieuwenhuis/iris_species_classifier/actions/workflows/ci.yaml"><img src="https://github.com/StefanNieuwenhuis/iris_species_classifier/actions/workflows/ci.yaml/badge.svg" /></a>
+<a href="https://codecov.io/gh/StefanNieuwenhuis/iris_species_classifier" ><img src="https://codecov.io/gh/StefanNieuwenhuis/iris_species_classifier/graph/badge.svg?token=94T80D5HC0"/></a>
+<a href="https://github.com/psf/black/blob/main/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+<a href="https://mypy-lang.org"><img src="https://www.mypy-lang.org/static/mypy_badge.svg" /></a>
+<a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" /></a>
 
 A minimal implementation of a generative classifier using Gaussian Naive Bayes, trained and evaluated on the [classic Iris dataset](https://archive.ics.uci.edu/ml/datasets/iris). Built for clarity, reproducibility, and testing foundational machine learning concepts.
 
