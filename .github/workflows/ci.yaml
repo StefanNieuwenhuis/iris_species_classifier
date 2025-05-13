@@ -19,7 +19,7 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
       - name: Restore cached virtualenv
-        uses: actions/caches/restore@v4
+        uses: actions/cache/save@v4
         with:
           key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
           path: .venv
