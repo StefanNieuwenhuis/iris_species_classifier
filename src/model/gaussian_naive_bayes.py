@@ -10,8 +10,8 @@ class _BaseNB():
     """Abstract base class for naive Bayes estimators"""
 
     @abstractmethod
-    def _compute_log_likelihood(self, X: pd.DataFrame) -> Self:
-        """Compute the unnormalized log likelihood of X"""
+    def _joint_log_likelihood(self, X: pd.DataFrame) -> Self:
+        """Compute the unnormalized posterior log probability of X."""
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame)-> Self:
         """Fit according to X, y."""
@@ -114,9 +114,9 @@ class GaussianNB(_BaseNB):
 
         return self
 
-    def _compute_log_likelihood(self, X: pd.DataFrame) -> Self:
+    def _joint_log_likelihood(self, X: pd.DataFrame) -> Self:
         """
-        Compute log-likelihood for all features in classes
+        Compute the unnormalized posterior log probability of X.
 
         Parameters
         ----------
@@ -133,6 +133,7 @@ class GaussianNB(_BaseNB):
         log_likelihood = []
 
         for i in range(len(self.classes_)):
+            class_prior = np.log(self.class_prior_[i])
             mean = self.class_mean_[i, :] # shape (n_features,)
             var = self.class_var_[i, :] # shape (f_features,)
 
@@ -146,7 +147,7 @@ class GaussianNB(_BaseNB):
             total_log_likelihood = norm_term + squared_error
 
             # Append individual class-specific log likelihood to the log_likelihood matrix
-            log_likelihood.append(total_log_likelihood)
+            log_likelihood.append(class_prior + total_log_likelihood)
 
             self.class_log_likelihood_ = np.vstack(log_likelihood).T # shape: (n_samples, n_classes)
 
