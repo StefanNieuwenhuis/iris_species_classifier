@@ -92,6 +92,13 @@ make test
 make test-coverage
 ```
 
+## Jupyter Notebooks with JupyterLab
+
+To start the JupyterLab environment and run notebooks:
+
+```bash
+make jupyter
+```
 Outputs `coverage.xml` report. The CI uploads it to [pytest-cov](https://app.codecov.io/gh/StefanNieuwenhuis/iris_species_classifier).
 
 ## CI/CD
