@@ -1,9 +1,15 @@
 [tool.black]
 line-length = 88
-target-version = ['py310']
+target-version = ['py312']
+extend-exclude = '''
+/(
+    notebooks
+)/
+'''
 
 [tool.isort]
 profile = "black"
+skip = ["notebooks"]
 
 [tool.pytest.ini_options]
 pythonpath = "src"
@@ -12,6 +18,15 @@ addopts = "-ra -q --import-mode=importlib"
 testpaths = [
     "tests",
 ]
+
+[tool.ruff]
+exclude = [".jupyter", "notebooks"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
 
 [tool.mypy]
 mypy_path = "src"
