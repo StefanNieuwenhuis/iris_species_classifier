@@ -15,12 +15,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-
       - name: Cache pip packages
         uses: actions/cache@v3
         with:
@@ -36,13 +34,6 @@ jobs:
       - name: Create virtualenv and install dependencies
         run: make env
 
-      - name: Persist virtualenv
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-venv
-          path: .venv
-          retention-days: 1
-
   lint:
     name: Linting with Ruff
     runs-on: ubuntu-latest
@@ -50,10 +41,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v4
-        with:
-          name: python-venv
-          path: .venv
 
       - name: Lint with ruff
         run: make lint
@@ -65,10 +52,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/download-artifact@v4
-      with:
-        name: python-venv
-        path: .venv
 
     - name: Check formatting with black
       run: make format-check
@@ -80,14 +63,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/download-artifact@v4
-      with:
-        name: python-venv
-        path: .venv
 
     - name: Run tests with coverage
       run: make test-coverage
-
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
