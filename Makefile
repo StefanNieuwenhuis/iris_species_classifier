@@ -1,19 +1,20 @@
-.PHONY: lint test run format jupyter env
+.PHONY: download env jupyter lint format format-check test run check
 
-# Download and extract data
+# Download and extract data (uses .env vars)
 download:
-	$(shell scripts/download_data.sh)
+	bash scripts/download_data.sh
 
-# Install dependencies in a virtual environment (assuming you are using `venv`)
+# Create virtual environment and install dependencies
 env:
-	python3 -m venv venv  # Create virtual environment
-	. .venv/bin/activate && pip install -r requirements.txt
+	python3 -m venv .venv
+	.venv/bin/pip install --upgrade pip
+	.venv/bin/pip install -r requirements.txt
 
-# Install Jupyter in the virtual environment (if using the venv for Jupyter)
+# Launch Jupyter Lab in notebooks directory
 jupyter:
 	.venv/bin/jupyter lab notebooks/
 
-# Linting code
+# Lint code with ruff
 lint:
 	.venv/bin/ruff check .
 
@@ -21,10 +22,21 @@ lint:
 format:
 	.venv/bin/black .
 
-# Run the tests
+# Check formatting only
+format-check:
+	.venv/bin/black --check .
+
+# Run unit tests
 test:
 	.venv/bin/pytest
 
-# Start the project (e.g., main script)
+# Run unit tests with coverage
+test-coverage:
+	.venv/bin/pytest --cov=src --cov-report=xml
+
+# Run main app
 run:
 	.venv/bin/python src/main.py
+
+# Combined lint, format-check, test-coverage
+check: lint format-check test-coverage

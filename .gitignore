@@ -4,7 +4,10 @@
 # Python
 .env
 .venv
+
+# Cache
 .pytest_cache
+.ruff_cache
 __pycache__
 
 # Jupyter Notebooks
