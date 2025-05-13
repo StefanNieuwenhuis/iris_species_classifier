@@ -35,6 +35,8 @@ jobs:
         with:
           key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
           path: .venv
+      - name: Linter
+        run: make lint
 
 
   # setup:
