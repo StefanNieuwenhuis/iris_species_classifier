@@ -7,16 +7,30 @@
 <a href="https://mypy-lang.org"><img src="https://www.mypy-lang.org/static/mypy_badge.svg" /></a>
 <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" /></a>
 
-A minimal implementation of a generative classifier using Gaussian Naive Bayes, trained and evaluated on the [classic Iris dataset](https://archive.ics.uci.edu/ml/datasets/iris). Built for clarity, reproducibility, and testing foundational machine learning concepts.
+![Iris Flower Species](./assets/iris_species_with_labels.png)
 
-## Features
+A minimal, educational implementation of classic and modern classifiers, trained and evaluated on the [classic Iris dataset](https://archive.ics.uci.edu/ml/datasets/iris). Built for clarity, reproducibility, and testing foundational machine learning concepts.
 
-- Classifies Iris Flowers into three species using Gaussian Naive Bayes
-- Includes test suite for core components (`/src/`)
-- Code coverage via [pytest-cov](https://app.codecov.io/gh/StefanNieuwenhuis/iris_species_classifier)
-- Static analysis with `black`, `mypy`, and `ruff`
-- Makefile for all common tasks
-- CI pipeline with GitHub Actions + Codecov integration
+## Overview
+
+This project implements, compares, and evaluates machine learning classifiers — starting with **Gaussian Naive Bayes from scratch**, and extending to **benchmark models** like K-Nearest Neighbors (KNN) and XGBoost. 
+
+The focus is on:
+- Understanding the math behind models  
+- Building extensible ML pipelines  
+- Enforcing clean, testable, and typed code  
+- Comparing performance across implementations
+
+
+## Models Implemented
+
+| Model                | Status      |
+|----------------------|-------------|
+| Gaussian Naive Bayes | Implemented |
+| Logistic Regression  | Planned     |
+| K-Nearest Neighbors  | Planned     |
+| ...                  |             |
+
 
 ## Demo
 
@@ -87,10 +101,18 @@ We use GitHub Actions to:
     - Run unit tests and generate code coverage report
     - Upload code coverage to Codecov
 
+## Coming Soon
+
+- Model comparison dashboards
+- Docker + CI deployment
+- Blog series on design decisions
+
 ## Author
 
 **Stefan Nieuwenhuis**
-Machine Learning Engineer focused on robust systems, end-to-end pipelines, and clarity in code.
+
+Machine Learning Engineer specialized in Large-Scale Recommender Systems, 3+ Years Production ML, ex-Tumblr
+
 [LinkedIn](https://www.linkedin.com/in/stefannhs) | [GitHub](https://github.com/StefanNieuwenhuis)
 
 ## License
