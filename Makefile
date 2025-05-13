@@ -32,11 +32,9 @@ test:
 
 # Run unit tests with coverage
 test-coverage:
-	.venv/bin/pytest --cov=src --cov-report=xml
+	.venv/bin/pytest --cov --cov-report xml:coverage.xml
 
 # Run main app
 run:
 	.venv/bin/python src/main.py
 
-# Combined lint, format-check, test-coverage
-check: lint format-check test-coverage
