@@ -4,14 +4,15 @@ import numpy as np
 from abc import abstractmethod
 from typing import Self
 
-class _BaseNB():
+
+class _BaseNB:
     """Abstract base class for naive Bayes estimators"""
 
     @abstractmethod
     def _joint_log_likelihood(self, X: pd.DataFrame) -> Self:
         """Compute the unnormalized posterior log probability of X."""
 
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame)-> Self:
+    def fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
         """Fit according to X, y."""
         pass
 
@@ -52,7 +53,6 @@ class _BaseNB():
             order, as they appear in the attribute :term:`classes_`.
         """
 
-
         joint_log_likelihood = self._joint_log_likelihood(X)
 
         # Compute the log of the marginal likelihood P(X) = P(f_1, ..., f_n)
@@ -60,9 +60,9 @@ class _BaseNB():
         # log(e^{class_0_sample_0} + ... + e^{class_n_sample_i})
         marginal_likelihood_x = np.logsumexp(joint_log_likelihood, axis=1)
 
-        return joint_log_likelihood - np.atleast_2d(marginal_likelihood_x).T # shape (n_samples, n_classes)
-
-
+        return (
+            joint_log_likelihood - np.atleast_2d(marginal_likelihood_x).T
+        )  # shape (n_samples, n_classes)
 
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
         """
@@ -81,8 +81,6 @@ class _BaseNB():
         """
 
         return np.exp(self.predict_log_proba(X))
-
-
 
 
 class GaussianNB(_BaseNB):
@@ -158,13 +156,13 @@ class GaussianNB(_BaseNB):
         n_classes = len(self.classes_)
         n_features = X.shape[1]
 
-         # Create array placeholders to store class mean and variance (µ and σ²)
+        # Create array placeholders to store class mean and variance (µ and σ²)
         self.class_mean_ = np.zeros((n_classes, n_features))
         self.class_var_ = np.zeros((n_classes, n_features))
 
         for y_i in unique_y:
-            i = self.classes_.searchsorted(y_i) # get class index
-            X_i = X[y == y_i, :] # Contains all feature variables for class y_i
+            i = self.classes_.searchsorted(y_i)  # get class index
+            X_i = X[y == y_i, :]  # Contains all feature variables for class y_i
 
             self.class_mean_[i, :] = np.mean(X_i, axis=0)
             self.class_var_[i, :] = np.var(X_i, axis=0)
@@ -191,8 +189,8 @@ class GaussianNB(_BaseNB):
 
         for i in range(len(self.classes_)):
             class_prior = np.log(self.class_prior_[i])
-            mean = self.class_mean_[i, :] # shape (n_features,)
-            var = self.class_var_[i, :] # shape (f_features,)
+            mean = self.class_mean_[i, :]  # shape (n_features,)
+            var = self.class_var_[i, :]  # shape (f_features,)
 
             # Log of the normalization term: sum of log(2πσ²)
             norm_term = -0.5 * np.sum(np.log(2.0 * np.pi * var))
@@ -206,8 +204,7 @@ class GaussianNB(_BaseNB):
             # Append individual class-specific log likelihood to the log_likelihood matrix
             log_likelihood.append(class_prior + total_log_likelihood)
 
-        return np.vstack(log_likelihood).T # shape: (n_samples, n_classes)
-
+        return np.vstack(log_likelihood).T  # shape: (n_samples, n_classes)
 
     def _partial_fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
         """
@@ -238,7 +235,7 @@ class GaussianNB(_BaseNB):
         # Compute Gaussian parameters (µ and σ²)
         self._compute_gaussian_params(X, y)
 
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame)-> Self:
+    def fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
         """
         Fit Gaussian Naive Bayes according to X, y.
 
