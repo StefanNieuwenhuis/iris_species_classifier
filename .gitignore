@@ -19,3 +19,6 @@ __pycache__
 
 # Data
 data/raw/
+
+# Test Coverage Reports
+coverage.xml
