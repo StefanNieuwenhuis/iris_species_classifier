@@ -67,7 +67,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/download-artifact@v4
       with:
-        name: python-env
+        name: python-venv
         path: .venv
 
     - name: Check formatting with black
@@ -82,7 +82,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/download-artifact@v4
       with:
-        name: python-env
+        name: python-venv
         path: .venv
 
     - name: Run tests with coverage
