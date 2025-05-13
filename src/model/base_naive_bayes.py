@@ -7,6 +7,7 @@ from scipy.special import logsumexp
 from typing import Self
 from numpy.typing import NDArray
 
+
 class _BaseNB:
     """Abstract base class for naive Bayes estimators"""
 
@@ -62,7 +63,9 @@ class _BaseNB:
         # Compute the log of the marginal likelihood P(X) = P(f_1, ..., f_n)
         # P(X) is used to normalize the joint log likelihood => P(c|X) = P(c|X)*P(c) / P(X)
         # log(e^{class_0_sample_0} + ... + e^{class_n_sample_i})
-        marginal_likelihood_x: NDArray[np.int64] = logsumexp(joint_log_likelihood, axis=1)
+        marginal_likelihood_x: NDArray[np.int64] = logsumexp(
+            joint_log_likelihood, axis=1
+        )
 
         return (
             joint_log_likelihood - np.atleast_2d(marginal_likelihood_x).T
