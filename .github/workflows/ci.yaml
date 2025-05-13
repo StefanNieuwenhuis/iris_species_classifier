@@ -32,7 +32,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y make
 
       - name: Create virtualenv and install dependencies
-        run: make env
+        run: .venv/bin/make env
 
   lint:
     name: Lint with Ruff
@@ -51,7 +51,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y make
 
      - name: Create virtualenv and install dependencies
-        run: make env
+        run: .venv/bin/make env
 
       - name: Lint
         run: .venv/bin/make lint
@@ -73,7 +73,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y make
 
       - name: Create virtualenv and install dependencies
-        run: make env
+        run: .venv/bin/make env
 
       - name: Format check
         run: .venv/bin/make format-check
@@ -95,7 +95,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y make
 
       - name: Create virtualenv and install dependencies
-        run: make env
+        run: .venv/bin/make env
 
       - name: Run tests with coverage
         run: .venv/bin/make test-coverage
