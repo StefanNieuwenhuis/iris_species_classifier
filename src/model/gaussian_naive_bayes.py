@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-
-from typing import Self, Optional
+from typing import Self
 from numpy.typing import NDArray
 
 from model.base_naive_bayes import _BaseNB
