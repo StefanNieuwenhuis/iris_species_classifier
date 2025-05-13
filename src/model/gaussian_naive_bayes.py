@@ -5,6 +5,7 @@ from typing import Self
 
 from model.base_naive_bayes import _BaseNB
 
+
 class GaussianNB(_BaseNB):
     """
     Gaussian Naive Bayes (GaussianNB).

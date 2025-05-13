@@ -4,8 +4,6 @@ from sklearn.utils._testing import (
     assert_array_equal,
     assert_array_almost_equal,
 )
-
-from config import SEED
 from model.gaussian_naive_bayes import GaussianNB
 
 DEFAULT_PRECISION = 8
@@ -64,20 +62,19 @@ def test_gnb_predict():
 
     clf = GaussianNB()
 
-    # rng = np.random.RandomState(SEED)
-    # X = rng.normal(size=(10, 3))
-    # y = (rng.normal(size=10) > 0).astype(int)
-
-    y_predict = clf.fit(X,y).predict(X)
+    y_predict = clf.fit(X, y).predict(X)
 
     assert_array_equal(y_predict, y, "Predictions should equal labels")
+
 
 def test_log_proba():
     """Test if log_proba and log(proba) return the same value."""
 
     clf = GaussianNB()
-    clf.fit(X,y)
+    clf.fit(X, y)
     log_prob_a = clf.predict_log_proba(X)
     prob_a = clf.predict_proba(X)
 
-    assert_array_almost_equal(log_prob_a, np.log(prob_a), DEFAULT_PRECISION, "It should have the same values")
+    assert_array_almost_equal(
+        log_prob_a, np.log(prob_a), DEFAULT_PRECISION, "It should have the same values"
+    )

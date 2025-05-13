@@ -6,6 +6,7 @@ from typing import Self
 
 from scipy.special import logsumexp
 
+
 class _BaseNB:
     """Abstract base class for naive Bayes estimators"""
 
