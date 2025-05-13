@@ -1,109 +1,124 @@
-name: CI Makefile Pipeline
+name: CI Pipeline
 
 on:
   pull_request:
     branches: [ main ]
 
 jobs:
-  setup:
-    name: Setup Python and Install Dependencies
+  build:
     runs-on: ubuntu-latest
-
-    outputs:
-      python-version: ${{ steps.set-python.outputs.python-version }}
+    strategy:
+      fail-fast: false
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Set up Python '3.12' and install Dependencies
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Cache pip packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: '3.13'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y make
 
-      - name: Create virtualenv and install dependencies
-        run: .venv/bin/make env
+  # setup:
+  #   name: Setup Python and Install Dependencies
+  #   runs-on: ubuntu-latest
 
-  lint:
-    name: Lint with Ruff
-    runs-on: ubuntu-latest
-    needs: setup
+  #   outputs:
+  #     python-version: ${{ steps.set-python.outputs.python-version }}
 
-    steps:
-      - uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.12'
+  #     - name: Cache pip packages
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           ~/.cache/pip
+  #         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-pip-
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
+  #     - name: Install system dependencies
+  #       run: sudo apt-get update && sudo apt-get install -y make
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y make
+  #     - name: Create virtualenv and install dependencies
+  #       run: .venv/bin/make env
 
-     - name: Create virtualenv and install dependencies
-        run: .venv/bin/make env
+  # lint:
+  #   name: Lint with Ruff
+  #   runs-on: ubuntu-latest
+  #   needs: setup
 
-      - name: Lint
-        run: .venv/bin/make lint
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-  format:
-    name: Check code formatting
-    runs-on: ubuntu-latest
-    needs: setup
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.12'
 
-    steps:
-      - uses: actions/checkout@v3
+  #     - name: Install system dependencies
+  #       run: sudo apt-get update && sudo apt-get install -y make
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
+  #    - name: Create virtualenv and install dependencies
+  #       run: .venv/bin/make env
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y make
+  #     - name: Lint
+  #       run: .venv/bin/make lint
 
-      - name: Create virtualenv and install dependencies
-        run: .venv/bin/make env
+  # format:
+  #   name: Check code formatting
+  #   runs-on: ubuntu-latest
+  #   needs: setup
 
-      - name: Format check
-        run: .venv/bin/make format-check
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-  test:
-    name: Run tests + upload coverage
-    runs-on: ubuntu-latest
-    needs: setup
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.12'
 
-    steps:
-      - uses: actions/checkout@v3
+  #     - name: Install system dependencies
+  #       run: sudo apt-get update && sudo apt-get install -y make
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
+  #     - name: Create virtualenv and install dependencies
+  #       run: .venv/bin/make env
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y make
+  #     - name: Format check
+  #       run: .venv/bin/make format-check
 
-      - name: Create virtualenv and install dependencies
-        run: .venv/bin/make env
+  # test:
+  #   name: Run tests + upload coverage
+  #   runs-on: ubuntu-latest
+  #   needs: setup
 
-      - name: Run tests with coverage
-        run: .venv/bin/make test-coverage
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-          flags: unittests
-          name: codecov-iris-classifier-project
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.12'
+
+  #     - name: Install system dependencies
+  #       run: sudo apt-get update && sudo apt-get install -y make
+
+  #     - name: Create virtualenv and install dependencies
+  #       run: .venv/bin/make env
+
+  #     - name: Run tests with coverage
+  #       run: .venv/bin/make test-coverage
+
+  #     - name: Upload coverage to Codecov
+  #       uses: codecov/codecov-action@v4
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         files: ./coverage.xml
+  #         flags: unittests
+  #         name: codecov-iris-classifier-project
