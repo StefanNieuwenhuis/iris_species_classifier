@@ -21,22 +21,33 @@ jobs:
       - name: Restore cached virtualenv
         uses: actions/cache/save@v4
         with:
-          key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements-ci.txt') }}
           path: .venv
       - name: Install dependencies
         run: |
           python -m venv .venv
           source .venv/bin/activate
-          python -m pip install -r requirements.txt
+          python -m pip install -r requirements-ci.txt
           echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
           echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
       - name: Saved cached virtualenv
         uses: actions/cache/save@v4
         with:
-          key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements-ci.txt') }}
           path: .venv
-      - name: Linter
+      - name: Run linter to check code for programmatic and stylistic errors
         run: make lint
+      - name: Check code formatting
+        run: make format-check
+      - name: Run unit tests and generate code-coverage report
+        run: make test-coverage
+      - name: Upload code-coverage report to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-iris-classifier-project
 
 
   # setup:
