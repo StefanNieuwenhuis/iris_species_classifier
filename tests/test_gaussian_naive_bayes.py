@@ -12,7 +12,7 @@ X = np.array([[-2, -1], [-1, -1], [-1, -2], [1, 1], [1, 2], [2, 1]])
 y = np.array([1, 1, 1, 2, 2, 2])
 
 
-def test_gnbs_priors():
+def test_gnbs_priors() -> None:
     """
     Test wheter class priors are properly computed
     """
@@ -36,7 +36,7 @@ def test_gnbs_priors():
     )
 
 
-def test_gnbs_gaussian_params():
+def test_gnbs_gaussian_params() -> None:
     """
     Test wheter class gaussian params (µ and σ²) are properly computed.
     """
@@ -57,7 +57,7 @@ def test_gnbs_gaussian_params():
         assert_array_almost_equal(actual_var, clf.class_var_[i, :], DEFAULT_PRECISION)
 
 
-def test_gnb_predict():
+def test_gnb_predict() -> None:
     """Test predictions"""
 
     clf = GaussianNB()
@@ -67,7 +67,7 @@ def test_gnb_predict():
     assert_array_equal(y_predict, y, "Predictions should equal labels")
 
 
-def test_log_proba():
+def test_log_proba() -> None:
     """Test if log_proba and log(proba) return the same value."""
 
     clf = GaussianNB()

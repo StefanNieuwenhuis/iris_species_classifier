@@ -2,23 +2,25 @@ import numpy as np
 import pandas as pd
 
 from abc import abstractmethod
-from typing import Self
-
 from scipy.special import logsumexp
 
+from typing import Self
+from numpy.typing import NDArray
 
 class _BaseNB:
     """Abstract base class for naive Bayes estimators"""
 
+    classes_: NDArray[np.int64]
+
     @abstractmethod
-    def _joint_log_likelihood(self, X: pd.DataFrame) -> Self:
+    def _joint_log_likelihood(self, X: pd.DataFrame) -> NDArray[np.int64]:
         """Compute the unnormalized posterior log probability of X."""
 
+    @abstractmethod
     def fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
         """Fit according to X, y."""
-        pass
 
-    def predict(self, X: pd.DataFrame) -> np.ndarray:
+    def predict(self, X: NDArray[np.float64]) -> NDArray[np.int64]:
         """
         Perform classification on an array of test vectors X.
 
@@ -34,10 +36,10 @@ class _BaseNB:
         """
 
         joint_log_likelihood = self._joint_log_likelihood(X)
+        indices: NDArray[np.int64] = np.argmax(joint_log_likelihood, axis=1)
+        return self.classes_[indices]
 
-        return self.classes_[np.argmax(joint_log_likelihood, axis=1)]
-
-    def predict_log_proba(self, X: pd.DataFrame) -> np.ndarray:
+    def predict_log_proba(self, X: pd.DataFrame) -> NDArray[np.int64]:
         """
         Return log-probability estimates for the test vector X.
 
@@ -60,13 +62,13 @@ class _BaseNB:
         # Compute the log of the marginal likelihood P(X) = P(f_1, ..., f_n)
         # P(X) is used to normalize the joint log likelihood => P(c|X) = P(c|X)*P(c) / P(X)
         # log(e^{class_0_sample_0} + ... + e^{class_n_sample_i})
-        marginal_likelihood_x = logsumexp(joint_log_likelihood, axis=1)
+        marginal_likelihood_x: NDArray[np.int64] = logsumexp(joint_log_likelihood, axis=1)
 
         return (
             joint_log_likelihood - np.atleast_2d(marginal_likelihood_x).T
         )  # shape (n_samples, n_classes)
 
-    def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
+    def predict_proba(self, X: pd.DataFrame) -> NDArray[np.float64]:
         """
         Return probability estimates for the test vector X.
 

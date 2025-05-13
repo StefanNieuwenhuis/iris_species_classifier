@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
 
-from typing import Self
+
+
+from typing import Self, Optional
+from numpy.typing import NDArray
 
 from model.base_naive_bayes import _BaseNB
 
@@ -27,13 +30,6 @@ class GaussianNB(_BaseNB):
         classes_ : ndarray of shape (n_classes)
             class labels known to the classifier.
     """
-
-    _parameter_constraints: dict = {
-        "priors": ["array-like", None],
-    }
-
-    def __init__(self, *, priors=None):
-        self.priors = priors
 
     def _compute_priors(self, y: pd.DataFrame) -> Self:
         """
@@ -75,6 +71,7 @@ class GaussianNB(_BaseNB):
         self : object
             Returns the instance itself.
         """
+
         unique_y = np.unique(y)
         n_classes = len(self.classes_)
         n_features = X.shape[1]
@@ -92,7 +89,7 @@ class GaussianNB(_BaseNB):
 
         return self
 
-    def _joint_log_likelihood(self, X: pd.DataFrame) -> np.ndarray:
+    def _joint_log_likelihood(self, X: pd.DataFrame) -> NDArray[np.int64]:
         """
         Compute the unnormalized posterior log probability of X.
 
@@ -148,7 +145,7 @@ class GaussianNB(_BaseNB):
             Returns the instance itself.
         """
 
-        self.classes_ = None
+        self.classes_: NDArray[np.int64] = np.array([], dtype=np.int64)
         self.class_prior_ = None
         self.class_count_ = None
 
@@ -157,6 +154,8 @@ class GaussianNB(_BaseNB):
 
         # Compute Gaussian parameters (µ and σ²)
         self._compute_gaussian_params(X, y)
+
+        return self
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
         """
