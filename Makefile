@@ -1,4 +1,4 @@
-.PHONY: download lint test run format format-check typecheck test-coverage jupyter env
+.PHONY: download lint test run format format-check typecheck test-coverage jupyter env preflight
 
 download:
 	$(shell scripts/download_data.sh)
@@ -27,3 +27,5 @@ test:
 
 test-coverage:
 	.venv/bin/pytest --cov=src --cov-report=xml
+
+preflight: lint format typecheck
