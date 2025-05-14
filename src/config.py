@@ -9,7 +9,11 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Env-based config
-RAW_DATA_PATH = BASE_DIR / os.getenv("IRIS_DB_PATH")
+env_path = os.getenv("IRIS_DB_PATH")
+if env_path is None:
+    raise RuntimeError("Environment variable IRIS_DB_PATH is not set.")
+
+RAW_DATA_PATH = BASE_DIR / env_path
 IRIS_TABLE_NAME = os.getenv("IRIS_TABLE_NAME", "Iris")
 SEED = int(os.getenv("SEED", 42))
 

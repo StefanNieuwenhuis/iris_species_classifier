@@ -76,10 +76,16 @@ make test
 
 Linting, Code Formatting, and Type checking:
 
-```
+```bash
 make lint
 make format
 make typecheck
+```
+
+Alternative to run linter, formatter and type checking with a single command:
+
+```bash
+make preflight
 ```
 
 ## Testing and Code Coverage
