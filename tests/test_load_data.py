@@ -35,6 +35,10 @@ def test_loading_data(monkeypatch: pytest.MonkeyPatch, mock_iris_db: Path) -> No
     # Patch the RAW_DATA_PATH config path
     monkeypatch.setenv("IRIS_DB_PATH", str(mock_iris_db))
 
+    import config
+
+    monkeypatch.setattr(config, "RAW_DATA_PATH", mock_iris_db)
+
     df = get_iris_species_data()
 
     assert not df.empty
