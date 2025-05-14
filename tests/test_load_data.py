@@ -24,7 +24,7 @@ def mock_iris_db(tmp_path: Path) -> Path:
         }
     )
 
-    df.to_sql("iris", conn, index=False, if_exists="replace")
+    df.to_sql("Iris", conn, index=False, if_exists="replace")
     conn.close()
 
     return db_path

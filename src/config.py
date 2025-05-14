@@ -3,7 +3,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Load variables from .env into environment
-load_dotenv()
+env_file = ".env" if Path(".env").exists() else ".env.ci"
+load_dotenv(dotenv_path=env_file)
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
