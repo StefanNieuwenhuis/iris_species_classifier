@@ -22,5 +22,6 @@ def get_iris_species_data() -> DataFrame[IrisSchema]:
     conn = sqlite3.connect(RAW_DATA_PATH)
     query = f"SELECT * FROM {IRIS_TABLE_NAME}"
     df = pd.read_sql(query, conn)
+    conn.close()
 
     return IrisSchema.validate(df)
