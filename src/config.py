@@ -2,14 +2,14 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load variables from .env into environment
-env_file = ".env" if Path(".env").exists() else ".env.ci"
+# Load .env if it exists, else .env.ci
+env_file = Path(".env") if Path(".env").exists() else Path(".env.ci")
 load_dotenv(dotenv_path=env_file)
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Env-based config
+# Environment-based config
 env_path = os.getenv("IRIS_DB_PATH")
 if env_path is None:
     raise RuntimeError("Environment variable IRIS_DB_PATH is not set.")
