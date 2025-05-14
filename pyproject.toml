@@ -32,6 +32,7 @@ line-ending = "auto"
 mypy_path = "src"
 python_version = "3.12"
 files = ["src", "tests"]
+plugins = ["pandera.mypy"]
 ignore_missing_imports = true
 strict = true
 warn_unused_ignores = true
