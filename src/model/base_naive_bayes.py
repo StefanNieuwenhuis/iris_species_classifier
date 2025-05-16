@@ -1,10 +1,9 @@
 import numpy as np
-import pandas as pd
 
 from abc import abstractmethod
 from scipy.special import logsumexp
 
-from typing import Self
+from typing import Self, Any
 from numpy.typing import NDArray
 
 
@@ -14,20 +13,20 @@ class _BaseNB:
     classes_: NDArray[np.int64]
 
     @abstractmethod
-    def _joint_log_likelihood(self, X: pd.DataFrame) -> NDArray[np.int64]:
+    def _joint_log_likelihood(self, X: NDArray[Any]) -> NDArray[np.int64]:
         """Compute the unnormalized posterior log probability of X."""
 
     @abstractmethod
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame) -> Self:
+    def fit(self, X: NDArray[Any], y: NDArray[np.int8]) -> Self:
         """Fit according to X, y."""
 
-    def predict(self, X: NDArray[np.float64]) -> NDArray[np.int64]:
+    def predict(self, X: NDArray[Any]) -> NDArray[np.int64]:
         """
         Perform classification on an array of test vectors X.
 
         Parameters
         ----------
-        X : pandas dataframe of shape (n_samples, n_features)
+        X : (2x3) Matrix of shape (n_samples, n_features)
             The input samples.
 
         Returns
@@ -37,10 +36,10 @@ class _BaseNB:
         """
 
         joint_log_likelihood = self._joint_log_likelihood(X)
-        indices: NDArray[np.int64] = np.argmax(joint_log_likelihood, axis=1)
+        indices: NDArray[np.int8] = np.argmax(joint_log_likelihood, axis=1)
         return self.classes_[indices]
 
-    def predict_log_proba(self, X: pd.DataFrame) -> NDArray[np.int64]:
+    def predict_log_proba(self, X: NDArray[Any]) -> NDArray[np.int64]:
         """
         Return log-probability estimates for the test vector X.
 
@@ -49,10 +48,9 @@ class _BaseNB:
         X : pandas dataframe of shape (n_samples, n_features)
             The input samples
 
-
         Returns
         -------
-        C : array-like of shape (n_samples, n_classes)
+        C : array-like of shape (n_samples, n_classes,)
             Returns the log-probability of the samples for each class in
             the model. The columns correspond to the classes in sorted
             order, as they appear in the attribute :term:`classes_`.
@@ -71,7 +69,7 @@ class _BaseNB:
             joint_log_likelihood - np.atleast_2d(marginal_likelihood_x).T
         )  # shape (n_samples, n_classes)
 
-    def predict_proba(self, X: pd.DataFrame) -> NDArray[np.float64]:
+    def predict_proba(self, X: NDArray[Any]) -> NDArray[np.float64]:
         """
         Return probability estimates for the test vector X.
 

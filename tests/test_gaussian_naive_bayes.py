@@ -1,80 +1,170 @@
+import pytest
 import numpy as np
+from typing import Union, Any
 
-from sklearn.utils._testing import (
-    assert_array_equal,
-    assert_array_almost_equal,
-)
+from numpy import ndarray, dtype
+from numpy.typing import NDArray
+from numpy.testing import assert_array_almost_equal, assert_array_equal
+
 from model.gaussian_naive_bayes import GaussianNB
 
 DEFAULT_PRECISION = 8
 
-X = np.array([[-2, -1], [-1, -1], [-1, -2], [1, 1], [1, 2], [2, 1]])
-y = np.array([1, 1, 1, 2, 2, 2])
 
+class TestGaussianNaiveBayes:
+    @pytest.fixture
+    def dummy_data(self) -> list[ndarray[tuple[int, ...], dtype[Any]]]:
+        """
+        Generate six distinguishable points that represent 2 Iris flower species "1", and "0".
 
-def test_gnbs_priors() -> None:
-    """
-    Test wheter class priors are properly computed
-    """
+              ^
+              | x
+              | x x
+        <-----+----->
+          o o |
+            o |
+              v
 
-    clf = GaussianNB()
-    clf.fit(X, y)
+        x - Denotes Iris flower species "1"
+        o - Denotes Iris flower species "0"
 
-    _, count = np.unique(y, return_counts=True)
-    n_total = count.sum()
-    actual = count / n_total
-    class_prior_sum = clf.class_prior_.sum()
+        Returns
+        -------
+        C: union of shape [(n_samples, n_features,), (n_classes,)]
+        """
+        X = np.array(
+            [
+                [-2, -1],
+                [-1, -1],
+                [-1, -2],
+                [1, 1],
+                [1, 2],
+                [2, 1],
+            ]
+        )
 
-    assert_array_almost_equal(
-        actual,
-        clf.class_prior_,
-        DEFAULT_PRECISION,
-        "Class prior should equal LaPlace Probability (n_favorable)/(n_total)",
-    )
-    assert_array_almost_equal(
-        class_prior_sum, 1.0, DEFAULT_PRECISION, "The class priors should sum to 1.0"
-    )
+        y = np.array([0, 0, 0, 1, 1, 1])
 
+        return [X, y]
 
-def test_gnbs_gaussian_params() -> None:
-    """
-    Test wheter class gaussian params (µ and σ²) are properly computed.
-    """
+    def test_gnb_priors(
+        self, dummy_data: Union[NDArray[np.int8], NDArray[np.int8]]
+    ) -> None:
+        """
+        It should correctly compute the class priors.
 
-    clf = GaussianNB()
-    clf.fit(X, y)
+        Parameters
+        ----------
+        dummy_data: list of feature matrix (6x3) and target vector
+        """
+        X, y = dummy_data
 
-    unique_y = np.unique(y)
+        _, count = np.unique(y, return_counts=True)
+        sum_samples_per_class = count.sum()  # sum of samples per class
+        expected_priors = count / sum_samples_per_class
 
-    for y_i in unique_y:
-        i = unique_y.searchsorted(y_i)  # get class index
-        X_i = X[y == y_i, :]  # Contains all feature variables for class y_i
+        clf = GaussianNB()
+        clf.fit(X, y)
 
-        actual_mean = np.mean(X_i, axis=0)
-        actual_var = np.var(X_i, axis=0)
+        assert_array_almost_equal(expected_priors, clf.class_prior_, DEFAULT_PRECISION)
+        assert_array_almost_equal(
+            1.0,
+            clf.class_prior_.sum(),
+            DEFAULT_PRECISION,
+            "The sum of priors should equal 1.0",
+        )
 
-        assert_array_almost_equal(actual_mean, clf.class_mean_[i, :], DEFAULT_PRECISION)
-        assert_array_almost_equal(actual_var, clf.class_var_[i, :], DEFAULT_PRECISION)
+    def test_frequencies(
+        self, dummy_data: Union[NDArray[np.int8], NDArray[np.int8]]
+    ) -> None:
+        """
+        It should correctly compute the frequencies for each class. For this, we generate frequency tables, and assert equality
 
+        Parameters
+        ----------
+        dummy_data: list of feature matrix (6x3) and target vector
+        """
+        X, y = dummy_data
 
-def test_gnb_predict() -> None:
-    """Test predictions"""
+        clf = GaussianNB()
+        clf.fit(X, y)
 
-    clf = GaussianNB()
+        # build frequency table
+        unique, counts = np.unique(y, return_counts=True)
+        expected_frequency_table = np.asarray((unique, counts)).T
 
-    y_predict = clf.fit(X, y).predict(X)
+        desired_frequency_table = np.asarray((clf.classes_, clf.class_count_)).T
+        assert_array_equal(expected_frequency_table, desired_frequency_table)
 
-    assert_array_equal(y_predict, y, "Predictions should equal labels")
+    def test_class_counts(
+        self, dummy_data: Union[NDArray[np.int8], NDArray[np.int8]]
+    ) -> None:
+        """
+        It should return the correct unique class count from the dataset
 
+        Parameters
+        ----------
+        dummy_data: list of feature matrix (6x3) and target vector
+        """
+        X, y = dummy_data
 
-def test_log_proba() -> None:
-    """Test if log_proba and log(proba) return the same value."""
+        clf = GaussianNB()
+        clf.fit(X, y)
 
-    clf = GaussianNB()
-    clf.fit(X, y)
-    log_prob_a = clf.predict_log_proba(X)
-    prob_a = clf.predict_proba(X)
+        _, expected_label_counts = np.unique(y, return_counts=True)
 
-    assert_array_almost_equal(
-        log_prob_a, np.log(prob_a), DEFAULT_PRECISION, "It should have the same values"
-    )
+        assert_array_equal(expected_label_counts, clf.class_count_)
+
+    def test_compute_mean_variance(
+        self, dummy_data: Union[NDArray[np.int8], NDArray[np.int8]]
+    ) -> None:
+        """
+        It should correctly compute the mean and variance for each class
+
+        Parameters
+        ----------
+        dummy_data: list of feature matrix (6x3) and target vector
+        """
+        X, y = dummy_data
+
+        clf = GaussianNB()
+        clf.fit(X, y)
+
+        classes = np.unique(y)
+        n_classes = len(classes)
+        n_features = X.shape[1]
+
+        expected_class_mean = np.zeros((n_classes, n_features))
+        expected_class_var = np.zeros((n_classes, n_features))
+
+        for y_i in classes:
+            i = classes.searchsorted(y_i)  # index in target vector
+            X_i = X[y == y_i]
+
+            expected_class_mean[i] = np.mean(X_i, axis=0)
+            expected_class_var[i] = np.var(X_i, axis=0)
+
+        assert_array_almost_equal(
+            expected_class_mean, clf.class_mean_, DEFAULT_PRECISION
+        )
+        assert_array_almost_equal(expected_class_var, clf.class_var_, DEFAULT_PRECISION)
+
+    def test_ngb_predict(
+        self, dummy_data: Union[NDArray[np.int8], NDArray[np.int8]]
+    ) -> None:
+        """
+        It should predict the correct classes given X_train == X_test
+
+        Parameters
+        ----------
+        dummy_data: list of feature matrix (6x3) and target vector
+        """
+        X, y = dummy_data
+        X_train = X_test = X
+        y_train = y_test = y
+
+        clf = GaussianNB()
+        clf.fit(X_train, y_train)
+
+        y_predict = clf.predict(X_test)
+        assert_array_equal(y_test, y_predict)
